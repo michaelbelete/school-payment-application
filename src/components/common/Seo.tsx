@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 
 import { openGraph } from '@/lib/helper';
 
-// !STARTERCONF Change these default meta
 const defaultMeta = {
   title: 'Next.js + Tailwind CSS + TypeScript Starter',
   siteName: 'Next.js + Tailwind CSS + TypeScript Starter',
