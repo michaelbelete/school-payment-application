@@ -42,7 +42,6 @@ model Transaction {
   id          Int      @id @default(autoincrement())
   amount      Int
   date        DateTime
-  description String
   Student     Student? @relation(fields: [studentId], references: [id])
   studentId   Int
   monthId     Int
