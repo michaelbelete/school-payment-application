@@ -17,7 +17,7 @@ const AdminAuthLayout: React.FC<Props> = (props) => {
     <div className='relative h-screen overflow-hidden bg-gray-100 dark:bg-gray-800'>
       {/* <!-- sidebar --> */}
       <div className='flex items-start justify-between'>
-        <SideBar links={links} title='Admin' />
+        <SideBar links={links} title='Administrator' />
         {/* <!-- div app --> */}
         <div className='flex w-full flex-col md:space-y-4'>
           <Header />
