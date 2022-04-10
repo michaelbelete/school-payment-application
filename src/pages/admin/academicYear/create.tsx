@@ -70,7 +70,7 @@ export default function Admin() {
                 placeholder='Enter Amount if the person pay late'
               />
             </div>
-            <div className=' relative flex flex-row gap-4'>
+            <div className='relative flex flex-row gap-4'>
               <div>
                 <label htmlFor='required-email' className='pb-2 text-gray-700'>
                   Start Day of the month

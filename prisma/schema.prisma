@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Student {
+  id           String        @id @default(cuid())
+  name         String
+  email        String
+  grade        String
+  section      String
+  transactions Transaction[]
+}
+
+model AcademicYear {
+  id        String   @id @default(cuid())
+  year      String
+  amount    Float
+  penalty   Float
+  startDate DateTime
+  endDate   DateTime
+  months    Month[]
+}
+
+model Month {
+  id             String        @id @default(cuid())
+  name           String
+  academicYearId String
+  academicYear   AcademicYear  @relation(fields: [academicYearId], references: [id])
+  transaction    Transaction[]
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  amount      Int
+  date        DateTime
+  description String
+  Student     Student? @relation(fields: [studentId], references: [id])
+  studentId   String?
+  monthId     String
+  month       Month    @relation(fields: [monthId], references: [id])
+}
