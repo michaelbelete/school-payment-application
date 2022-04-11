@@ -33,7 +33,11 @@ export default NextAuth({
 
         if (!user) return null;
 
-        return user;
+        return {
+          email: user.email,
+          image: 's',
+          username: user.name,
+        };
       },
     }),
   ],
