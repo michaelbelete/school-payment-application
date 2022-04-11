@@ -2,11 +2,13 @@ import Link from 'next/link';
 import React from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 
+import Analytics from '@/components/admin/Analytics';
 import PaymentTable from '@/components/admin/PaymentTable';
 import AdminAuthLayout from '@/components/layout/AdminAuthLayout';
 export default function Admin() {
   return (
     <AdminAuthLayout>
+      <Analytics />
       <div className='mb-4 flex flex-row justify-between'>
         <h1 className='pb-4 text-2xl font-medium'>Manage Monthly Payments</h1>
         <Link href='/admin/academicYear/create' passHref>
