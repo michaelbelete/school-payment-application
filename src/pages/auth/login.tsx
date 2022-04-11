@@ -1,6 +1,33 @@
+import { useRouter } from 'next/router';
+import { signIn } from 'next-auth/react';
 import React from 'react';
 
 export default function Login() {
+  const router = useRouter();
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const callbackUrl =
+    typeof router.query?.callbackUrl === 'string'
+      ? router.query.callbackUrl
+      : '/jobs';
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const response = await signIn<'credentials'>('credentials', {
+      redirect: false,
+      email,
+      password,
+      callbackUrl,
+    });
+
+    if (response.error) {
+      if (response.status === 401) alert('Your email or password is incorrect');
+      else alert('An error occurred' + response.error);
+    } else {
+      router.push('/admin');
+    }
+  };
   return (
     <div className='flex h-screen flex-row items-center justify-center bg-gray-100 pt-9 '>
       <div className='flex w-full max-w-md flex-col items-center rounded-lg bg-white py-10 shadow-lg dark:bg-gray-800 sm:px-6 md:px-8 lg:px-10'>
@@ -8,7 +35,7 @@ export default function Login() {
           Login To Your Account
         </div>
         <div className='mt-8'>
-          <form action='#' autoComplete='off'>
+          <form onSubmit={handleSubmit}>
             <div className='mb-2 flex flex-col'>
               <div className='relative flex '>
                 <span className='inline-flex items-center  rounded-l-md border-t border-l border-b border-gray-300 bg-white  px-3 text-sm text-gray-500 shadow-sm'>
@@ -24,6 +51,8 @@ export default function Login() {
                 </span>
                 <input
                   type='text'
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   id='sign-in-email'
                   className=' w-full flex-1 appearance-none rounded-r-lg border border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600'
                   placeholder='Your email'
@@ -45,6 +74,8 @@ export default function Login() {
                 </span>
                 <input
                   type='password'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   id='sign-in-email'
                   className=' w-full flex-1 appearance-none rounded-r-lg border border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600'
                   placeholder='Your password'
