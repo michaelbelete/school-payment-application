@@ -1,6 +1,8 @@
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 import React from 'react';
 export default function Header() {
+  const { data: session, status } = useSession();
   return (
     <>
       {/* <!-- header --> */}
@@ -19,7 +21,7 @@ export default function Header() {
               />
             </a>
             <button className='text-md flex items-center pb-2 text-white dark:text-white'>
-              Welcome Michael
+              Welcome {session?.user?.name}
             </button>
           </div>
         </div>

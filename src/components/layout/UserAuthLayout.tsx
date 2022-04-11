@@ -1,3 +1,5 @@
+import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 import React, { ReactNode } from 'react';
 
 import Header from '../common/Header';
@@ -7,6 +9,17 @@ type Props = {
 };
 
 const AdminAuthLayout: React.FC<Props> = (props) => {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  React.useEffect(() => {
+    if (!session) {
+      router.push('/');
+    } else if (session?.user?.image !== 's') {
+      router.push('/admin');
+    }
+  }, [session]);
+
   const links = [
     {
       name: 'Home',

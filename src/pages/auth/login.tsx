@@ -25,7 +25,7 @@ export default function Login() {
       if (response.status === 401) alert('Your email or password is incorrect');
       else alert('An error occurred' + response.error);
     } else {
-      router.push('/admin');
+      router.push('/');
     }
   };
   return (

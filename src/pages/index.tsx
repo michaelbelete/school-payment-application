@@ -1,7 +1,15 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 import * as React from 'react';
-
 export default function HomePage() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  if (session) {
+    if (session.user?.image == 's') router.push('/user');
+    else if (session.user?.image == 'a') router.push('/admin');
+  }
   return (
     <div className='relative h-screen overflow-hidden bg-indigo-900'>
       <img
@@ -82,5 +90,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-

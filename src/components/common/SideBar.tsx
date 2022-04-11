@@ -1,12 +1,15 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { signOut } from 'next-auth/react';
 import React from 'react';
-
 type Link = {
   name: string;
   url: string;
 };
 
 export default function SideBar(props: { links: Link[]; title: string }) {
+  const router = useRouter();
+
   return (
     <div className='relative hidden h-screen w-80 shadow-lg lg:block'>
       <div className='h-full bg-white dark:bg-gray-700'>
@@ -28,7 +31,14 @@ export default function SideBar(props: { links: Link[]; title: string }) {
               className='my-2 flex w-full items-center justify-start p-2 pl-6 text-gray-800 transition-colors duration-200 dark:text-white'
               href='#'
             >
-              <span className='mx-2 text-sm font-normal'>Logout</span>
+              <button
+                className='mx-2 text-sm font-normal'
+                onClick={() => {
+                  signOut();
+                }}
+              >
+                Logout
+              </button>
             </a>
           </div>
         </nav>

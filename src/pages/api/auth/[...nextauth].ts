@@ -36,7 +36,7 @@ export default NextAuth({
         return {
           email: user.email,
           image: 's',
-          username: user.name,
+          name: user.name,
         };
       },
     }),
