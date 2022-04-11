@@ -1,88 +1,71 @@
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
+import { verifyPassword } from '@helpers/auth';
+import prisma from '@helpers/prisma';
+import NextAuth, { Session } from 'next-auth';
+import CredentialProvider from 'next-auth/providers/credentials';
 
 export default NextAuth({
   providers: [
-    CredentialsProvider({
-      // The name to display on the sign in form (e.g. 'Sign in with...')
-      name: 'my-project',
-      // The credentials is used to generate a suitable form on the sign in page.
-      // You can specify whatever fields you are expecting to be submitted.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
+    CredentialProvider({
+      name: 'credentials',
       credentials: {
         email: {
-          label: 'email',
+          label: 'Email',
           type: 'email',
-          placeholder: 'jsmith@example.com',
+          placeholder: 'john@test.com',
         },
         password: { label: 'Password', type: 'password' },
-        tenantKey: {
-          label: 'Tenant Key',
-          type: 'text',
-        },
       },
-      async authorize(credentials, req) {
-        const payload = {
-          email: credentials.email,
-          password: credentials.password,
-        };
+      async authorize(
+        credentials: Record<'email' | 'password', string> | undefined
+      ) {
+        if (!credentials) return null;
 
-        const res = await fetch('http://localhost:5000/api/tokens', {
-          method: 'POST',
-          body: JSON.stringify(payload),
-          headers: {
-            'Content-Type': 'application/json',
-            tenant: credentials.tenantKey,
-            'Accept-Language': 'en-US',
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email.toLowerCase(),
           },
         });
 
-        const user = await res.json();
-        if (!res.ok) {
-          throw new Error(user.exception);
-        }
-        // If no error and we have user data, return it
-        if (res.ok && user) {
+        if (!user) return null;
+
+        const isCorrectPassword = await verifyPassword(
+          credentials.password,
+          user.password as string
+        );
+        if (isCorrectPassword) {
           return user;
         }
 
-        // Return null if user data could not be retrieved
+        // login failed
         return null;
       },
     }),
-    // ...add more providers here
   ],
-  secret: process.env.JWT_SECRET,
-  pages: {
-    signIn: '/login',
-  },
   callbacks: {
-    async jwt({ token, user, account }) {
-      if (account && user) {
-        return {
-          ...token,
-          accessToken: user.data.token,
-          refreshToken: user.data.refreshToken,
-        };
+    jwt: ({ token, user }) => {
+      // first time jwt callback is run, user object is available
+      if (user) {
+        token.id = user.id;
       }
 
       return token;
     },
-
     async session({ session, token }) {
-      session.user.accessToken = token.accessToken;
-      session.user.refreshToken = token.refreshToken;
-      session.user.accessTokenExpires = token.accessTokenExpires;
-
-      return session;
+      const currentSession: Session = {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id as number,
+        },
+      };
+      return currentSession;
     },
   },
-  theme: {
-    colorScheme: 'auto', // "auto" | "dark" | "light"
-    brandColor: '', // Hex color code #33FF5D
-    logo: '/logo.png', // Absolute URL to image
+  secret: 'test',
+  jwt: {
+    secret: 'test',
   },
-  // Enable debug messages in the console if you are having problems
-  debug: process.env.NODE_ENV === 'development',
+  pages: {
+    signIn: '/auth/login',
+  },
 });
